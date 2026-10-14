@@ -17,6 +17,7 @@ h1{font-size:clamp(28px,5vw,44px);line-height:1.1;margin:0 0 24px;letter-spacing
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
 .tile{display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;text-decoration:none;transition:border-color .15s}
 .tile:hover,.tile:focus-visible{border-color:var(--gold);outline:none}
+.tile.featured{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 8px 24px rgba(212,162,76,.14)}
 .tile .cover{aspect-ratio:16/9;background:#0f1317;display:block;width:100%;object-fit:cover}
 .tile .info{padding:12px 14px}
 .tile b{display:block;font-size:20px}
@@ -58,6 +59,30 @@ const SITE = {
 };
 
 const PLAYERS = [
+  {
+    nick: "Мои настройки", folder: "мои настройки", featured: true,
+    shots: [
+      { file: "управление, существа (1).png", caption: "Управление, существа" },
+      { file: "предметы (2).png", caption: "Предметы" },
+      { file: "интерфейс, курьер, лавка, подконтрольные (3).png", caption: "Интерфейс, курьер, лавка, подконтрольные" },
+      { file: "камера, модификаторы (4).png", caption: "Камера, модификаторы" },
+      { file: "штучки (5).png", caption: "Штучки" },
+      { file: "приказы существам (6).png", caption: "Приказы существам" },
+      { file: "мини-карта (7).png", caption: "Мини-карта" },
+      { file: "карта на весь экран, камера (8).png", caption: "Карта на весь экран, камера" },
+      { file: "лавка (9).png", caption: "Лавка" },
+      { file: "интерфейс (10).png", caption: "Интерфейс" },
+      { file: "полоса здоровья (11).png", caption: "Полоса здоровья" },
+      { file: "прочее, разрешение (12).png", caption: "Прочее, разрешение" },
+      { file: "графика (13).png", caption: "Графика" },
+      { file: "звук (14).png", caption: "Звук" },
+      { file: "звук (15.png", caption: "Звук" },
+      { file: "колесо чата (16).png", caption: "Колесо чата" },
+      { file: "колесо сигналов (17).png", caption: "Колесо сигналов" },
+      { file: "сообщество (18).png", caption: "Сообщество" },
+      { file: "зритель (19).png", caption: "Зритель" }
+    ]
+  },
   {
     nick: "Yatoro", folder: "yatoro", date: "октябрь 2026",
     count: 6   // сколько картинок лежит в img/yatoro/ (1.png, 2.png ... 6.png)
@@ -103,7 +128,7 @@ PLAYERS.forEach(p => {
 
 const app = document.getElementById("app");
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const src = (p, s) => `img/${p.folder}/${s.file}`;
+const src = (p, s) => `img/${encodeURIComponent(p.folder)}/${encodeURIComponent(s.file)}`;
 let current = [], idx = 0;
 
 function renderIndex(){
@@ -111,7 +136,7 @@ function renderIndex(){
   app.innerHTML = `
     <h1>${esc(SITE.title)}</h1>
     <div class="grid">${PLAYERS.map(p => `
-      <a class="tile" href="#${esc(p.folder)}">
+      <a class="tile${p.featured ? " featured" : ""}" href="#${esc(p.folder)}">
         <img class="cover" src="${esc(src(p, p.shots[0]))}" alt="" loading="lazy" onerror="this.removeAttribute('src')">
         <div class="info"><b>${esc(p.nick)}</b><span>скринов: ${p.shots.length}</span></div>
       </a>`).join("")}
@@ -124,7 +149,7 @@ function renderPlayer(p){
   app.innerHTML = `
     <a class="back" href="#">‹ Все игроки</a>
     <h1>${esc(p.nick)}</h1>
-    <p class="meta">${esc(p.date)}</p>
+    ${p.date ? `<p class="meta">${esc(p.date)}</p>` : ""}
     <div class="shots">${p.shots.map((s, i) => `
       <figure class="shot">
         <button data-i="${i}" aria-label="Открыть скриншот ${i + 1}">
